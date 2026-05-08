@@ -38,21 +38,25 @@ document.addEventListener("keyup", e=>{
     keys[e.key.toLowerCase()] = false;
 });
 
-// ===== IMAGENS ONLINE =====
-const playerImg = new Image();
-playerImg.src = "https://i.imgur.com/4LGAZ8t.png";
+// ===== IMAGENS MELHORADAS =====
 
-const zombieImg = new Image();
-zombieImg.src = "https://i.imgur.com/s8QZP6F.png";
-
+// fundo estilo apocalipse (escuro, cidade)
 const bg = new Image();
-bg.src = "https://i.imgur.com/3ZQ3ZQK.jpg"; // fundo simples
+bg.src = "https://i.imgur.com/8QfQbQp.jpg";
+
+// player mais nítido (soldado pixel art)
+const playerImg = new Image();
+playerImg.src = "https://i.imgur.com/1X4hQZl.png";
+
+// zumbi mais claro e visível
+const zombieImg = new Image();
+zombieImg.src = "https://i.imgur.com/5vQF3bK.png";
 
 // ===== PLAYER =====
 const player = {
     x: 400,
     y: 300,
-    size: 64,
+    size: 60,
     speed: 5
 };
 
@@ -63,12 +67,12 @@ function spawnZombie(){
     zombies.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: 64,
-        speed: 1.2
+        size: 60,
+        speed: 1.4
     });
 }
 
-setInterval(spawnZombie, 1500);
+setInterval(spawnZombie, 1200);
 
 // ===== MOVIMENTO =====
 function movePlayer(){
@@ -78,7 +82,7 @@ function movePlayer(){
     if(keys["d"]) player.x += player.speed;
 }
 
-// ===== ZUMBIS SEGUE JOGADOR =====
+// ===== IA ZUMBIS =====
 function updateZombies(){
     zombies.forEach(z=>{
         const angle = Math.atan2(
@@ -94,7 +98,7 @@ function updateZombies(){
 // ===== DESENHO =====
 function draw(){
 
-    // fundo
+    // fundo cobrindo tela inteira
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
     // player
@@ -134,5 +138,6 @@ function loop(){
 loop();
 
 </script>
+
 </body>
 </html>
