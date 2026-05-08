@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Zombie Survival - Apocalipse Zumbi</title>
+    <title>Zombie Survival - Arsenal Completo</title>
     <style>
         * {
             margin: 0;
@@ -106,6 +106,67 @@
             text-shadow: 0 0 10px rgba(255, 153, 51, 0.5);
         }
 
+        /* Sistema de Armas HUD */
+        .weapon-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+            pointer-events: auto;
+            border: 1px solid rgba(255, 51, 0, 0.3);
+        }
+
+        .weapon-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 15px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .weapon-slot.active {
+            background: rgba(255, 51, 0, 0.3);
+            border-color: #ff3300;
+            box-shadow: 0 0 15px rgba(255, 51, 0, 0.3);
+        }
+
+        .weapon-slot span:first-child {
+            font-size: 24px;
+        }
+
+        .weapon-slot span:last-child {
+            font-size: 10px;
+            color: #fff;
+            margin-top: 3px;
+        }
+
+        .ammo-display {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffcc00;
+            z-index: 100;
+            pointer-events: none;
+            font-family: monospace;
+        }
+
         .controls-hint {
             position: fixed;
             bottom: 20px;
@@ -114,14 +175,14 @@
             backdrop-filter: blur(5px);
             padding: 8px 15px;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 10px;
             color: #888;
             font-family: monospace;
             z-index: 100;
             pointer-events: none;
         }
 
-        /* Joystick e Botões Mobile */
+        /* Mobile Controls */
         .mobile-controls {
             position: fixed;
             bottom: 20px;
@@ -137,8 +198,8 @@
         .joystick-container {
             pointer-events: auto;
             position: relative;
-            width: 140px;
-            height: 140px;
+            width: 130px;
+            height: 130px;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
             border-radius: 50%;
@@ -151,16 +212,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
         }
 
         .joystick-thumb {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             background: rgba(255, 51, 0, 0.8);
             border-radius: 50%;
             top: 50%;
@@ -264,48 +325,32 @@
             display: none;
         }
 
-        /* Esconder joystick em desktop */
-        @media (min-width: 769px) {
-            .mobile-controls {
-                display: none;
-            }
-        }
-
-        /* Ajustes mobile */
         @media (max-width: 768px) {
+            .weapon-container {
+                padding: 5px 10px;
+                gap: 8px;
+                bottom: 100px;
+            }
+            .weapon-slot {
+                padding: 3px 10px;
+            }
+            .weapon-slot span:first-child {
+                font-size: 18px;
+            }
+            .ammo-display {
+                bottom: 140px;
+                font-size: 11px;
+            }
             .health-bar {
                 width: 150px;
             }
-            .score-value {
-                font-size: 22px;
-            }
-            .game-over h1 {
-                font-size: 32px;
-            }
-            .game-over {
-                padding: 30px 40px;
-            }
-            .controls-hint {
-                font-size: 9px;
-                bottom: 10px;
-                left: 10px;
-            }
             .joystick-container {
-                width: 120px;
-                height: 120px;
-            }
-            .joystick-base {
-                width: 80px;
-                height: 80px;
-            }
-            .joystick-thumb {
-                width: 45px;
-                height: 45px;
+                width: 110px;
+                height: 110px;
             }
             .shoot-button {
                 width: 70px;
                 height: 70px;
-                font-size: 20px;
             }
         }
     </style>
@@ -328,11 +373,34 @@
         </div>
     </div>
 
-    <div class="controls-hint">
-        🎮 WASD / Setas - Movimentar | 🖱️ Mouse / Toque - Mirar e Atirar
+    <!-- Sistema de Armas -->
+    <div class="weapon-container">
+        <div class="weapon-slot" data-weapon="pistol" id="weaponPistol">
+            <span>🔫</span>
+            <span>PISTOLA</span>
+        </div>
+        <div class="weapon-slot" data-weapon="rifle" id="weaponRifle">
+            <span>🔫🔫</span>
+            <span>RIFLE</span>
+        </div>
+        <div class="weapon-slot" data-weapon="shotgun" id="weaponShotgun">
+            <span>💥</span>
+            <span>SHOTGUN</span>
+        </div>
+        <div class="weapon-slot" data-weapon="machinegun" id="weaponMachinegun">
+            <span>⚡</span>
+            <span>MGUN</span>
+        </div>
     </div>
 
-    <!-- Controles Mobile (Joystick + Botão de Tiro) -->
+    <div class="ammo-display" id="ammoDisplay">
+        🔫 Munição: ∞
+    </div>
+
+    <div class="controls-hint">
+        🎮 WASD / Setas - Mover | 🖱️ Mouse - Mirar | 🔫 1-4 - Trocar Arma | Clique - Atirar
+    </div>
+
     <div class="mobile-controls">
         <div class="joystick-container" id="joystickContainer">
             <div class="joystick-base"></div>
@@ -358,22 +426,78 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Tamanho do canvas (fullscreen responsivo)
         let canvasWidth = window.innerWidth;
         let canvasHeight = window.innerHeight;
 
         // ============================================
-        // IMAGENS (Sprites PNG)
+        // SISTEMA DE ARMAS
+        // ============================================
+        const weapons = {
+            pistol: {
+                name: 'Pistola',
+                damage: 34,
+                fireRate: 0.25,
+                bulletSpeed: 700,
+                bulletCount: 1,
+                spread: 0.02,
+                color: '#ffcc00',
+                icon: '🔫',
+                ammo: -1 // infinito
+            },
+            rifle: {
+                name: 'Rifle',
+                damage: 45,
+                fireRate: 0.15,
+                bulletSpeed: 900,
+                bulletCount: 1,
+                spread: 0.01,
+                color: '#44ff44',
+                icon: '🔫🔫',
+                ammo: 30
+            },
+            shotgun: {
+                name: 'Shotgun',
+                damage: 25,
+                fireRate: 0.6,
+                bulletSpeed: 600,
+                bulletCount: 5,
+                spread: 0.12,
+                color: '#ff8844',
+                icon: '💥',
+                ammo: 8
+            },
+            machinegun: {
+                name: 'Metralhadora',
+                damage: 28,
+                fireRate: 0.07,
+                bulletSpeed: 800,
+                bulletCount: 1,
+                spread: 0.05,
+                color: '#ff4444',
+                icon: '⚡',
+                ammo: 100
+            }
+        };
+
+        let currentWeapon = 'pistol';
+        let weaponAmmo = {
+            pistol: -1,
+            rifle: 30,
+            shotgun: 8,
+            machinegun: 100
+        };
+        let lastShotTime = 0;
+        let reloading = false;
+
+        // ============================================
+        // IMAGENS
         // ============================================
         const playerImg = new Image();
         playerImg.src = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
-        
         const zombieImg = new Image();
         zombieImg.src = 'https://cdn-icons-png.flaticon.com/512/4801/4801142.png';
-        
         const bulletImg = new Image();
         bulletImg.src = 'https://cdn-icons-png.flaticon.com/512/1082/1082542.png';
-        
         const backgroundImg = new Image();
         backgroundImg.src = 'https://images.pexels.com/photos/1777669/pexels-photo-1777669.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop';
 
@@ -382,21 +506,14 @@
         
         function imageLoaded() {
             imagesToLoad--;
-            if (imagesToLoad === 0) {
-                imagesLoaded = true;
-            }
+            if (imagesToLoad === 0) imagesLoaded = true;
         }
         
         playerImg.onload = imageLoaded;
         zombieImg.onload = imageLoaded;
         bulletImg.onload = imageLoaded;
         backgroundImg.onload = imageLoaded;
-        
-        setTimeout(() => {
-            if (!imagesLoaded) {
-                imagesLoaded = true;
-            }
-        }, 2000);
+        setTimeout(() => { imagesLoaded = true; }, 2000);
 
         // ============================================
         // VARIÁVEIS DO JOGO
@@ -404,33 +521,25 @@
         let gameRunning = true;
         let score = 0;
         
-        // Jogador
         const player = {
-            x: canvasWidth / 2,
-            y: canvasHeight / 2,
-            width: 45,
-            height: 45,
-            hp: 100,
-            maxHp: 100,
-            speed: 320,
-            invincibleTimer: 0
+            x: canvasWidth / 2, y: canvasHeight / 2,
+            width: 45, height: 45,
+            hp: 100, maxHp: 100,
+            speed: 320, invincibleTimer: 0
         };
         
-        // Arrays de entidades
         let zombies = [];
         let bullets = [];
         
-        // Teclas pressionadas (WASD + Setas)
+        // Controles
         const keys = {
             w: false, s: false, a: false, d: false,
             arrowup: false, arrowdown: false, arrowleft: false, arrowright: false
         };
         
-        // Mouse/Touch position
-        let mouseX = canvasWidth / 2;
-        let mouseY = canvasHeight / 2;
+        let mouseX = canvasWidth / 2, mouseY = canvasHeight / 2;
         
-        // Controles mobile - Joystick
+        // Joystick mobile
         let joystickActive = false;
         let joystickVector = { x: 0, y: 0 };
         let joystickCenter = { x: 0, y: 0 };
@@ -441,8 +550,11 @@
         let gameTime = 0;
         let lastTimestamp = 0;
         
+        // Efeitos visuais
+        let muzzleFlashes = [];
+        
         // ============================================
-        // FUNÇÕES AUXILIARES
+        // FUNÇÕES DO JOGO
         // ============================================
         
         function resizeCanvas() {
@@ -450,7 +562,6 @@
             canvasHeight = window.innerHeight;
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
-            
             if (player) {
                 player.x = Math.min(Math.max(player.x, 20), canvasWidth - 20);
                 player.y = Math.min(Math.max(player.y, 20), canvasHeight - 20);
@@ -462,19 +573,10 @@
             let x, y;
             const padding = 30;
             
-            if (side === 0) {
-                x = Math.random() * canvasWidth;
-                y = -padding;
-            } else if (side === 1) {
-                x = canvasWidth + padding;
-                y = Math.random() * canvasHeight;
-            } else if (side === 2) {
-                x = Math.random() * canvasWidth;
-                y = canvasHeight + padding;
-            } else {
-                x = -padding;
-                y = Math.random() * canvasHeight;
-            }
+            if (side === 0) { x = Math.random() * canvasWidth; y = -padding; }
+            else if (side === 1) { x = canvasWidth + padding; y = Math.random() * canvasHeight; }
+            else if (side === 2) { x = Math.random() * canvasWidth; y = canvasHeight + padding; }
+            else { x = -padding; y = Math.random() * canvasHeight; }
             
             const baseSpeed = 110;
             const speedBonus = Math.min(gameTime * 15, 150);
@@ -486,66 +588,110 @@
             });
         }
         
+        // Sistema de tiro melhorado
         function shoot() {
             if (!gameRunning) return;
             
+            const now = performance.now() / 1000;
+            const weapon = weapons[currentWeapon];
+            
+            if (now - lastShotTime < weapon.fireRate) return;
+            
+            // Verificar munição
+            if (weaponAmmo[currentWeapon] !== -1 && weaponAmmo[currentWeapon] <= 0) {
+                // Recarregar automático
+                if (currentWeapon === 'rifle') weaponAmmo.rifle = 30;
+                else if (currentWeapon === 'shotgun') weaponAmmo.shotgun = 8;
+                else if (currentWeapon === 'machinegun') weaponAmmo.machinegun = 100;
+                return;
+            }
+            
+            lastShotTime = now;
+            
+            // Consumir munição
+            if (weaponAmmo[currentWeapon] !== -1) {
+                weaponAmmo[currentWeapon]--;
+                updateAmmoDisplay();
+            }
+            
+            // Efeito de flash
+            muzzleFlashes.push({ x: player.x, y: player.y, timer: 0.1 });
+            
+            // Calcular direção base
             const dx = mouseX - player.x;
             const dy = mouseY - player.y;
             const length = Math.sqrt(dx * dx + dy * dy);
-            
             if (length === 0) return;
             
-            const dirX = dx / length;
-            const dirY = dy / length;
+            const baseDirX = dx / length;
+            const baseDirY = dy / length;
             
-            bullets.push({
-                x: player.x, y: player.y, width: 8, height: 8,
-                vx: dirX * 650, vy: dirY * 650, damage: 34
-            });
+            // Disparar múltiplos projéteis (Shotgun)
+            for (let i = 0; i < weapon.bulletCount; i++) {
+                let dirX = baseDirX;
+                let dirY = baseDirY;
+                
+                // Adicionar spread
+                if (weapon.spread > 0) {
+                    const angle = Math.atan2(dirY, dirX);
+                    const spreadAngle = (Math.random() - 0.5) * weapon.spread;
+                    const newAngle = angle + spreadAngle;
+                    dirX = Math.cos(newAngle);
+                    dirY = Math.sin(newAngle);
+                }
+                
+                bullets.push({
+                    x: player.x, y: player.y,
+                    width: 8, height: 8,
+                    vx: dirX * weapon.bulletSpeed,
+                    vy: dirY * weapon.bulletSpeed,
+                    damage: weapon.damage,
+                    color: weapon.color
+                });
+            }
         }
         
-        // Atualizar movimento do jogador (teclado + joystick)
+        function updateAmmoDisplay() {
+            const ammo = weaponAmmo[currentWeapon];
+            const displayText = ammo === -1 ? '∞' : ammo;
+            document.getElementById('ammoDisplay').innerHTML = `${weapons[currentWeapon].icon} ${weapons[currentWeapon].name}: ${displayText}`;
+        }
+        
+        function switchWeapon(weapon) {
+            currentWeapon = weapon;
+            document.querySelectorAll('.weapon-slot').forEach(slot => {
+                slot.classList.remove('active');
+            });
+            document.getElementById(`weapon${weapon.charAt(0).toUpperCase() + weapon.slice(1)}`).classList.add('active');
+            updateAmmoDisplay();
+        }
+        
         function updatePlayer(deltaTime) {
             let moveX = 0, moveY = 0;
             
-            // Teclado (WASD + Setas)
             if (keys.w || keys.arrowup) moveY -= 1;
             if (keys.s || keys.arrowdown) moveY += 1;
             if (keys.a || keys.arrowleft) moveX -= 1;
             if (keys.d || keys.arrowright) moveX += 1;
             
-            // Joystick mobile
             if (joystickActive) {
                 moveX += joystickVector.x;
                 moveY += joystickVector.y;
             }
             
-            // Normalizar movimento diagonal
             if (moveX !== 0 || moveY !== 0) {
                 const length = Math.sqrt(moveX * moveX + moveY * moveY);
                 moveX /= length;
                 moveY /= length;
             }
             
-            // Limitar velocidade máxima do joystick
-            const maxSpeed = 1;
-            moveX = Math.min(Math.max(moveX, -maxSpeed), maxSpeed);
-            moveY = Math.min(Math.max(moveY, -maxSpeed), maxSpeed);
-            
-            // Aplicar movimento
             player.x += moveX * player.speed * deltaTime;
             player.y += moveY * player.speed * deltaTime;
-            
-            // Limites
             player.x = Math.min(Math.max(player.x, 20), canvasWidth - 20);
             player.y = Math.min(Math.max(player.y, 20), canvasHeight - 20);
             
-            // Invencibilidade
-            if (player.invincibleTimer > 0) {
-                player.invincibleTimer -= deltaTime;
-            }
+            if (player.invincibleTimer > 0) player.invincibleTimer -= deltaTime;
             
-            // Atualizar HUD
             const healthPercent = (player.hp / player.maxHp) * 100;
             document.getElementById('healthFill').style.width = healthPercent + '%';
         }
@@ -553,7 +699,6 @@
         function updateZombies(deltaTime) {
             for (let i = 0; i < zombies.length; i++) {
                 const z = zombies[i];
-                
                 const dx = player.x - z.x;
                 const dy = player.y - z.y;
                 const angle = Math.atan2(dy, dx);
@@ -561,7 +706,6 @@
                 z.x += Math.cos(angle) * z.speed * deltaTime;
                 z.y += Math.sin(angle) * z.speed * deltaTime;
                 
-                // Colisão com jogador
                 const collisionDist = 35;
                 const dxPlayer = player.x - z.x;
                 const dyPlayer = player.y - z.y;
@@ -571,9 +715,7 @@
                     player.hp -= 15;
                     player.invincibleTimer = 0.8;
                     
-                    if (player.hp <= 0) {
-                        gameOver();
-                    }
+                    if (player.hp <= 0) gameOver();
                     
                     const healthPercent = (player.hp / player.maxHp) * 100;
                     document.getElementById('healthFill').style.width = Math.max(0, healthPercent) + '%';
@@ -630,11 +772,19 @@
                 if (gameTime > 30) zombiesToSpawn = 3;
                 else if (gameTime > 15) zombiesToSpawn = 2;
                 
-                for (let i = 0; i < zombiesToSpawn; i++) {
-                    spawnZombie();
-                }
+                for (let i = 0; i < zombiesToSpawn; i++) spawnZombie();
             }
             gameTime += deltaTime;
+        }
+        
+        function updateMuzzleFlashes(deltaTime) {
+            for (let i = 0; i < muzzleFlashes.length; i++) {
+                muzzleFlashes[i].timer -= deltaTime;
+                if (muzzleFlashes[i].timer <= 0) {
+                    muzzleFlashes.splice(i, 1);
+                    i--;
+                }
+            }
         }
         
         // ============================================
@@ -650,13 +800,6 @@
                 gradient.addColorStop(1, '#2a1a1a');
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-                for (let i = 0; i < 50; i++) {
-                    ctx.beginPath();
-                    ctx.arc(Math.random() * canvasWidth, Math.random() * canvasHeight, Math.random() * 3, 0, Math.PI * 2);
-                    ctx.fill();
-                }
             }
             
             const gradient = ctx.createRadialGradient(player.x, player.y, 100, player.x, player.y, 400);
@@ -668,9 +811,7 @@
         
         function drawPlayer() {
             ctx.save();
-            if (player.invincibleTimer > 0 && Math.floor(Date.now() / 50) % 2 === 0) {
-                ctx.globalAlpha = 0.5;
-            }
+            if (player.invincibleTimer > 0 && Math.floor(Date.now() / 50) % 2 === 0) ctx.globalAlpha = 0.5;
             
             if (playerImg.complete && playerImg.naturalWidth > 0) {
                 ctx.drawImage(playerImg, player.x - 25, player.y - 25, 50, 50);
@@ -681,13 +822,12 @@
                 ctx.fill();
             }
             
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#ff0000';
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, 30, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            // Arma atual equipada (visual)
+            ctx.font = '20px monospace';
+            ctx.fillStyle = weapons[currentWeapon].color;
+            ctx.shadowBlur = 5;
+            ctx.fillText(weapons[currentWeapon].icon, player.x + 15, player.y - 15);
+            
             ctx.restore();
         }
         
@@ -702,37 +842,31 @@
                     ctx.fill();
                 }
                 
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = '#ff0000';
                 ctx.fillStyle = '#ff0000';
                 ctx.beginPath();
                 ctx.arc(z.x - 8, z.y - 8, 4, 0, Math.PI * 2);
                 ctx.arc(z.x + 8, z.y - 8, 4, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.shadowBlur = 0;
             }
         }
         
         function drawBullets() {
             for (const b of bullets) {
-                if (bulletImg.complete && bulletImg.naturalWidth > 0) {
-                    ctx.drawImage(bulletImg, b.x - 6, b.y - 6, 12, 12);
-                } else {
-                    ctx.fillStyle = '#ffcc00';
-                    ctx.shadowBlur = 10;
-                    ctx.beginPath();
-                    ctx.arc(b.x, b.y, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                ctx.fillStyle = b.color || '#ffcc00';
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = b.color || '#ffaa00';
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, 5, 0, Math.PI * 2);
+                ctx.fill();
             }
             ctx.shadowBlur = 0;
         }
         
-        function drawBloodEffects() {
-            for (let i = 0; i < 30; i++) {
-                ctx.fillStyle = `rgba(100, 0, 0, ${Math.random() * 0.3})`;
+        function drawMuzzleFlashes() {
+            for (const flash of muzzleFlashes) {
+                ctx.fillStyle = `rgba(255, 200, 50, ${flash.timer * 3})`;
                 ctx.beginPath();
-                ctx.arc(Math.random() * canvasWidth, Math.random() * canvasHeight, Math.random() * 4, 0, Math.PI * 2);
+                ctx.arc(flash.x, flash.y, 15, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
@@ -740,7 +874,7 @@
         function drawAim() {
             ctx.beginPath();
             ctx.arc(mouseX, mouseY, 8, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(255, 51, 0, 0.8)';
+            ctx.strokeStyle = weapons[currentWeapon].color;
             ctx.lineWidth = 2;
             ctx.stroke();
             ctx.beginPath();
@@ -775,12 +909,13 @@
                 updateZombies(deltaTime);
                 updateBullets(deltaTime);
                 updateSpawner(deltaTime);
+                updateMuzzleFlashes(deltaTime);
             }
             
             drawBackground();
-            drawBloodEffects();
             drawZombies();
             drawBullets();
+            drawMuzzleFlashes();
             drawPlayer();
             drawAim();
             
@@ -804,23 +939,28 @@
             spawnTimer = 0;
             zombies = [];
             bullets = [];
+            muzzleFlashes = [];
             
             player.x = canvasWidth / 2;
             player.y = canvasHeight / 2;
             player.hp = player.maxHp;
             player.invincibleTimer = 0;
             
+            weaponAmmo = {
+                pistol: -1, rifle: 30, shotgun: 8, machinegun: 100
+            };
+            currentWeapon = 'pistol';
+            switchWeapon('pistol');
+            
             document.getElementById('scoreValue').innerText = '0';
             document.getElementById('healthFill').style.width = '100%';
             document.getElementById('gameOver').classList.add('hidden');
             
-            for (let i = 0; i < 3; i++) {
-                spawnZombie();
-            }
+            for (let i = 0; i < 3; i++) spawnZombie();
         };
         
         // ============================================
-        // EVENTOS DE TECLADO (WASD + SETAS)
+        // EVENTOS
         // ============================================
         
         window.addEventListener('keydown', (e) => {
@@ -834,9 +974,13 @@
             if (key === 'arrowleft') keys.arrowleft = true;
             if (key === 'arrowright') keys.arrowright = true;
             
-            if (['w', 's', 'a', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
-                e.preventDefault();
-            }
+            // Teclas numéricas para trocar arma
+            if (key === '1') switchWeapon('pistol');
+            if (key === '2') switchWeapon('rifle');
+            if (key === '3') switchWeapon('shotgun');
+            if (key === '4') switchWeapon('machinegun');
+            
+            if (['w', 's', 'a', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) e.preventDefault();
         });
         
         window.addEventListener('keyup', (e) => {
@@ -851,7 +995,6 @@
             if (key === 'arrowright') keys.arrowright = false;
         });
         
-        // Mouse e Touch para mira
         function updateAimPosition(clientX, clientY) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
@@ -862,32 +1005,25 @@
             mouseY = Math.min(Math.max(y, 0), canvasHeight);
         }
         
-        window.addEventListener('mousemove', (e) => {
-            updateAimPosition(e.clientX, e.clientY);
-        });
-        
+        window.addEventListener('mousemove', (e) => updateAimPosition(e.clientX, e.clientY));
         window.addEventListener('click', (e) => {
             if (e.target === document.getElementById('shootButton')) return;
             shoot();
         });
         
-        // ============================================
-        // EVENTOS DE TOUCH (Mobile)
-        // ============================================
-        
+        // Touch events
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
             updateAimPosition(touch.clientX, touch.clientY);
         });
-        
         canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
             updateAimPosition(touch.clientX, touch.clientY);
         });
         
-        // Joystick mobile
+        // Joystick
         const joystickContainer = document.getElementById('joystickContainer');
         const joystickThumb = document.getElementById('joystickThumb');
         let joystickRadius = 40;
@@ -900,14 +1036,12 @@
         function handleJoystickStart(e) {
             e.preventDefault();
             joystickActive = true;
-            const center = getJoystickCenter();
-            joystickCenter = center;
+            joystickCenter = getJoystickCenter();
         }
         
         function handleJoystickMove(e) {
             if (!joystickActive) return;
             e.preventDefault();
-            
             let clientX, clientY;
             if (e.touches) {
                 clientX = e.touches[0].clientX;
@@ -941,15 +1075,17 @@
         joystickContainer.addEventListener('touchmove', handleJoystickMove);
         joystickContainer.addEventListener('touchend', handleJoystickEnd);
         
-        // Botão de tiro mobile
+        // Botão de tiro
         const shootButton = document.getElementById('shootButton');
-        shootButton.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            shoot();
-        });
-        shootButton.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            shoot();
+        shootButton.addEventListener('touchstart', (e) => { e.preventDefault(); shoot(); });
+        shootButton.addEventListener('mousedown', (e) => { e.preventDefault(); shoot(); });
+        
+        // Seleção de armas mobile
+        document.querySelectorAll('.weapon-slot').forEach(slot => {
+            slot.addEventListener('click', () => {
+                const weapon = slot.getAttribute('data-weapon');
+                switchWeapon(weapon);
+            });
         });
         
         canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -965,9 +1101,8 @@
         
         function init() {
             resizeCanvas();
-            for (let i = 0; i < 3; i++) {
-                spawnZombie();
-            }
+            for (let i = 0; i < 3; i++) spawnZombie();
+            switchWeapon('pistol');
             lastFrameTime = performance.now();
             requestAnimationFrame(gameLoop);
         }
